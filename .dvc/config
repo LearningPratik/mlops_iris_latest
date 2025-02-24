@@ -1,0 +1,4 @@
+[core]
+    remote = iris_remote
+['remote "iris_remote"']
+    url = ../../iris_remote_path
