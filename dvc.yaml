@@ -73,29 +73,29 @@ stages:
     outs:
     - model/rf_model_1.pkl
 
-  evaluate:
-    cmd: python src/evaluate.py model/rf_model_1.pkl dvc/data/processed
-    deps:
-    - data/processed
-    - model/rf_model_1.pkl
-    - src/evaluate.py
-    outs:
-    - eval/importance.png
-    - eval/live/plots:
-        cache: false
-    # - eval/precision:
-    #     cache: false
-    metrics:
-    - eval/live/metrics.json:
-        cache: false
+#   evaluate:
+#     cmd: python src/evaluate.py model/rf_model_1.pkl dvc/data/processed
+#     deps:
+#     - data/processed
+#     - model/rf_model_1.pkl
+#     - src/evaluate.py
+#     outs:
+#     - eval/importance.png
+#     - eval/live/plots:
+#         cache: false
+#     # - eval/precision:
+#     #     cache: false
+#     metrics:
+#     - eval/live/metrics.json:
+#         cache: false
 
-plots:
-  - Confusion Matrix:
-      template: confusion
-      # actual y
-      x: actual
-      # predicted y
-      y:
-        eval/live/plots/sklearn/cm/train.json: predicted
-        eval/live/plots/sklearn/cm/test.json: predicted
-  - eval/importance.png
+# plots:
+#   - Confusion Matrix:
+#       template: confusion
+#       # actual y
+#       x: actual
+#       # predicted y
+#       y:
+#         eval/live/plots/sklearn/cm/train.json: predicted
+#         eval/live/plots/sklearn/cm/test.json: predicted
+#   - eval/importance.png
