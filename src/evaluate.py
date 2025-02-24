@@ -41,13 +41,6 @@ def evaluate(param_yaml_path, model, data, data_category, live):
     live.summary['roc_auc'][data_category] = roc_auc
 
 
-    # using DVC's sklearn plot for saving confusion matrix
-    live.log_sklearn_plot('confusion_matrix', y,
-                           predictions_by_class.argmax(-1),
-                           name = f'cm/{data_category}')
-    
-    return ""
-
 if __name__ == '__main__':
     param_yaml_path = 'params.yaml'
     with open(param_yaml_path) as f:
@@ -76,18 +69,3 @@ if __name__ == '__main__':
     evaluate(param_yaml_path, model, train, 'train', live)
     evaluate(param_yaml_path, model, test, 'test', live)
     live.make_summary()
-
-    # Dump feature importances image
-    fig, axes = plt.subplots(dpi = 100)
-    fig.subplots_adjust(bottom = 0.2, top = 0.95)
-
-    # which features are important
-    importances = model.feature_importances_
-    X = train.drop(columns = 'species', axis = 1)
-    feature_names = [f'feature {i}' for i in range(X.shape[1])]
-    forest_importances = pd.Series(importances, index = feature_names).nlargest(n = 30)
-    axes.set_ylabel('Mean decrease in impurity')
-    forest_importances.plot.bar(ax = axes)
-    
-    # saving feature imporatance image
-    fig.savefig(Path(EVAL_PATH) / 'importance.png')

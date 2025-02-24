@@ -58,7 +58,7 @@ stages:
   # train step
   train:
   
-    cmd: python src/train.py data/features model/rf_model_1.pkl
+    cmd: python src/train.py data/features models_pkl/rf_model_1.pkl
     deps:
     - data/processed
     - src/train.py
@@ -71,31 +71,14 @@ stages:
     - process.test_file
     - train.n_est
     outs:
-    - model/rf_model_1.pkl
+    - models_pkl/rf_model_1.pkl
 
-#   evaluate:
-#     cmd: python src/evaluate.py model/rf_model_1.pkl dvc/data/processed
-#     deps:
-#     - data/processed
-#     - model/rf_model_1.pkl
-#     - src/evaluate.py
-#     outs:
-#     - eval/importance.png
-#     - eval/live/plots:
-#         cache: false
-#     # - eval/precision:
-#     #     cache: false
-#     metrics:
-#     - eval/live/metrics.json:
-#         cache: false
-
-# plots:
-#   - Confusion Matrix:
-#       template: confusion
-#       # actual y
-#       x: actual
-#       # predicted y
-#       y:
-#         eval/live/plots/sklearn/cm/train.json: predicted
-#         eval/live/plots/sklearn/cm/test.json: predicted
-#   - eval/importance.png
+  evaluate:
+    cmd: python src/evaluate.py models_pkl/rf_model_1.pkl data/processed
+    deps:
+    - data/processed
+    - models_pkl/rf_model_1.pkl
+    - src/evaluate.py
+    metrics:
+    - eval/live/metrics.json:
+        cache: false

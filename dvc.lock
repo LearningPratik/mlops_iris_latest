@@ -1,0 +1,93 @@
+schema: '2.0'
+stages:
+  data_split:
+    cmd: python src/data_split.py
+    deps:
+    - path: src/data_split.py
+      hash: md5
+      md5: f1f9c742624207eaadc0d2a2dd9a93fb
+      size: 1613
+    params:
+      params.yaml:
+        base.random_state: 42
+        data_source.data_path: data/iris.csv
+        split.split_ratio: 0.2
+    outs:
+    - path: data/split
+      hash: md5
+      md5: 78a871d9e47a006cedbd656d2a073d6b.dir
+      size: 3840
+      nfiles: 2
+  data_process:
+    cmd: python src/data_process.py
+    deps:
+    - path: data/split
+      hash: md5
+      md5: 78a871d9e47a006cedbd656d2a073d6b.dir
+      size: 3840
+      nfiles: 2
+    - path: src/data_process.py
+      hash: md5
+      md5: 1a99f811bb1e2c3846fae69a5853964e
+      size: 1705
+    params:
+      params.yaml:
+        process.dir: data/processed
+        process.test_file: test.csv
+        process.train_file: train.csv
+        split.dir: data/split
+        split.test_file: test.csv
+        split.train_file: train.csv
+    outs:
+    - path: data/processed
+      hash: md5
+      md5: 41ee3ba142758b06f6725a76adff44c1.dir
+      size: 2740
+      nfiles: 2
+  train:
+    cmd: python src/train.py data/features models_pkl/rf_model_1.pkl
+    deps:
+    - path: data/processed
+      hash: md5
+      md5: 41ee3ba142758b06f6725a76adff44c1.dir
+      size: 2740
+      nfiles: 2
+    - path: src/train.py
+      hash: md5
+      md5: cde51d0ee93c72ac3dba0b3852248acb
+      size: 1908
+    params:
+      params.yaml:
+        base.random_state: 42
+        base.target_col: species
+        model_dir: models_pkl
+        process.dir: data/processed
+        process.test_file: test.csv
+        process.train_file: train.csv
+        train.n_est: 3
+    outs:
+    - path: models_pkl/rf_model_1.pkl
+      hash: md5
+      md5: cabf76d7191903d5e0d878797424e2fb
+      size: 6704
+  evaluate:
+    cmd: python src/evaluate.py models_pkl/rf_model_1.pkl data/processed
+    deps:
+    - path: data/processed
+      hash: md5
+      md5: 41ee3ba142758b06f6725a76adff44c1.dir
+      size: 2740
+      nfiles: 2
+    - path: models_pkl/rf_model_1.pkl
+      hash: md5
+      md5: cabf76d7191903d5e0d878797424e2fb
+      size: 6704
+    - path: src/evaluate.py
+      hash: md5
+      md5: bc6eb10e249317c3cadb436105eed362
+      size: 2537
+    outs:
+    - path: eval/live/metrics.json
+      hash: md5
+      md5: f0adf8669f134b1cd7486fcf77828d2b
+      size: 171
